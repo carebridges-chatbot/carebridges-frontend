@@ -51,21 +51,44 @@ function ResetPassword() {
 
     setIsLoading(true);
     try {
-      await resetPassword(token, newPassword);
+      const response = await resetPassword(token, newPassword);
+      console.log('비밀번호 재설정 성공:', response);
       setShowResult(true);
+      alert('비밀번호가 성공적으로 재설정되었습니다. 새로운 비밀번호로 로그인해주세요.');
     } catch (err) {
       console.error('비밀번호 재설정 실패:', err);
       console.error('에러 응답:', err.response?.data);
+      console.error('에러 상태:', err.response?.status);
       
-      if (err.response?.status === 400) {
-        setError('유효하지 않은 토큰이거나 만료된 링크입니다. 새로운 링크를 요청해주세요.');
-      } else if (err.response?.status === 422) {
-        setError('비밀번호 형식이 올바르지 않습니다.');
-      } else if (err.response?.status === 404) {
-        setError('토큰을 찾을 수 없습니다. 링크가 만료되었거나 잘못되었습니다.');
-      } else {
-        setError(`비밀번호 재설정 중 오류가 발생했습니다. (${err.response?.status || '네트워크 오류'})`);
+      let errorMessage = '비밀번호 재설정 중 오류가 발생했습니다. 다시 시도해주세요.';
+      
+      // 네트워크 오류
+      if (!err.response) {
+        errorMessage = '서버에 연결할 수 없습니다. 인터넷 연결을 확인해주세요.';
       }
+      // 400 에러 (유효하지 않은 토큰)
+      else if (err.response?.status === 400) {
+        const message = err.response?.data?.message || err.response?.data?.detail || '';
+        errorMessage = message || '유효하지 않은 토큰이거나 만료된 링크입니다. 새로운 링크를 요청해주세요.';
+      }
+      // 404 에러 (토큰을 찾을 수 없음)
+      else if (err.response?.status === 404) {
+        errorMessage = '토큰을 찾을 수 없습니다. 링크가 만료되었거나 잘못되었습니다.';
+      }
+      // 422 에러 (유효성 검증 실패)
+      else if (err.response?.status === 422) {
+        const message = err.response?.data?.message || err.response?.data?.detail || '';
+        errorMessage = message || '비밀번호 형식이 올바르지 않습니다.';
+      }
+      // 기타 에러
+      else if (err.response?.data?.message) {
+        errorMessage = err.response.data.message;
+      } else if (err.response?.data?.detail) {
+        errorMessage = err.response.data.detail;
+      }
+      
+      setError(errorMessage);
+      alert(errorMessage);
     } finally {
       setIsLoading(false);
     }

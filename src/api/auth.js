@@ -172,12 +172,24 @@ export const findPassword = async (email) => {
 // 비밀번호 재설정 API
 export const resetPassword = async (token, newPassword) => {
   try {
+    console.log('비밀번호 재설정 API 호출:', { token: token.substring(0, 20) + '...', hasPassword: !!newPassword });
     const response = await instance.post('/auth/reset-password', {
-      token,
+      token: token,
       newPassword: newPassword,
+    }, {
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      withCredentials: false
     });
+    console.log('비밀번호 재설정 API 응답:', response.data);
     return response.data;
   } catch (error) {
+    console.error('비밀번호 재설정 API 에러:', {
+      message: error.message,
+      response: error.response?.data,
+      status: error.response?.status
+    });
     throw error;
   }
 };

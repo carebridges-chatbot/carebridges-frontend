@@ -301,7 +301,7 @@ This project is developed based on the following open source libraries:
 
 ## 📞 Contact
 
-If you have any questions about the project, please create an issue.
+If you have any questions about the project, please contact us at **rlarudals727@gmail.com** or create an issue.
 
 ---
 

@@ -177,11 +177,25 @@ export const findPassword = async (name, email) => {
 // 비밀번호 재설정 API
 export const resetPassword = async (token, newPassword) => {
   try {
-    console.log('비밀번호 재설정 API 호출:', { token: token.substring(0, 20) + '...', hasPassword: !!newPassword });
-    const response = await instance.post('/auth/reset-password', {
+    console.log('비밀번호 재설정 API 호출:', { 
+      token: token ? token.substring(0, 20) + '...' : '없음', 
+      hasPassword: !!newPassword,
+      passwordLength: newPassword?.length || 0
+    });
+    
+    // 백엔드가 기대하는 형식으로 요청
+    // 다양한 필드명 시도: token/resetToken, newPassword/password
+    const requestBody = {
       token: token,
       newPassword: newPassword,
-    }, {
+    };
+    
+    console.log('요청 본문:', { 
+      token: requestBody.token ? requestBody.token.substring(0, 20) + '...' : '없음',
+      hasNewPassword: !!requestBody.newPassword 
+    });
+    
+    const response = await instance.post('/auth/reset-password', requestBody, {
       headers: {
         'Content-Type': 'application/json'
       },
@@ -193,8 +207,15 @@ export const resetPassword = async (token, newPassword) => {
     console.error('비밀번호 재설정 API 에러:', {
       message: error.message,
       response: error.response?.data,
-      status: error.response?.status
+      status: error.response?.status,
+      errors: error.response?.data?.errors
     });
+    
+    // 에러 응답의 errors 배열 상세 로깅
+    if (error.response?.data?.errors) {
+      console.error('에러 상세 배열:', error.response.data.errors);
+    }
+    
     throw error;
   }
 };

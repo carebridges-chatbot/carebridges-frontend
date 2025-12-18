@@ -83,8 +83,40 @@ function ResetPassword() {
       }
       // 422 에러 (유효성 검증 실패)
       else if (err.response?.status === 422) {
-        const message = err.response?.data?.message || err.response?.data?.detail || '';
-        errorMessage = message || '비밀번호 형식이 올바르지 않습니다.';
+        const responseData = err.response?.data || {};
+        const message = responseData.message || responseData.detail || '';
+        const errors = responseData.errors;
+        
+        console.log('422 에러 상세:', {
+          message,
+          errors,
+          fullResponse: responseData
+        });
+        
+        if (errors && Array.isArray(errors) && errors.length > 0) {
+          // 유효성 검증 에러 배열이 있는 경우
+          const firstError = errors[0];
+          
+          // 다양한 에러 형식 처리
+          if (typeof firstError === 'string') {
+            errorMessage = firstError;
+          } else if (firstError.message) {
+            errorMessage = firstError.message;
+          } else if (firstError.msg) {
+            errorMessage = firstError.msg;
+          } else if (firstError.error) {
+            errorMessage = firstError.error;
+          } else if (firstError.field && firstError.message) {
+            // 필드별 에러 메시지
+            errorMessage = `${firstError.field}: ${firstError.message}`;
+          } else {
+            errorMessage = String(firstError) || '입력한 정보를 확인해주세요.';
+          }
+        } else if (message) {
+          errorMessage = message;
+        } else {
+          errorMessage = '비밀번호 형식이 올바르지 않습니다. 영문, 숫자, 특수문자를 포함하여 8자 이상 입력해주세요.';
+        }
       }
       // 기타 에러
       else if (err.response?.data?.message) {

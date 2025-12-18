@@ -1,5 +1,19 @@
 import instance from './axios';
 
+/**
+ * 인증 관련 API 엔드포인트
+ * 
+ * 연결된 API:
+ * - POST /auth/login - 로그인
+ * - GET /auth/me - 내 정보 조회
+ * - POST /auth/register - 회원가입
+ * - POST /auth/refresh - 토큰 재발급
+ * - POST /auth/logout - 로그아웃
+ * - POST /auth/find-email - 이메일 찾기
+ * - POST /auth/forgot-password - 비밀번호 재설정 메일 전송
+ * - POST /auth/reset-password - 비밀번호 재설정
+ */
+
 // 로그인 API
 export const loginUser = async (email, password) => {
   try {

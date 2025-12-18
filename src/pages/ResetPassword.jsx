@@ -103,24 +103,25 @@ function ResetPassword() {
         });
         
         if (errors && Array.isArray(errors) && errors.length > 0) {
-          // 유효성 검증 에러 배열이 있는 경우
-          const firstError = errors[0];
+          // 유효성 검증 에러 배열이 있는 경우 - 모든 에러 메시지 수집
+          const errorMessages = errors.map(err => {
+            if (typeof err === 'string') {
+              return err;
+            } else if (err.message) {
+              return err.field ? `${err.field}: ${err.message}` : err.message;
+            } else if (err.msg) {
+              return err.field ? `${err.field}: ${err.msg}` : err.msg;
+            } else if (err.error) {
+              return err.error;
+            } else if (err.field && err.message) {
+              return `${err.field}: ${err.message}`;
+            } else {
+              return String(err);
+            }
+          });
           
-          // 다양한 에러 형식 처리
-          if (typeof firstError === 'string') {
-            errorMessage = firstError;
-          } else if (firstError.message) {
-            errorMessage = firstError.message;
-          } else if (firstError.msg) {
-            errorMessage = firstError.msg;
-          } else if (firstError.error) {
-            errorMessage = firstError.error;
-          } else if (firstError.field && firstError.message) {
-            // 필드별 에러 메시지
-            errorMessage = `${firstError.field}: ${firstError.message}`;
-          } else {
-            errorMessage = String(firstError) || '입력한 정보를 확인해주세요.';
-          }
+          // 모든 에러 메시지를 하나로 합침
+          errorMessage = errorMessages.join(', ');
         } else if (message) {
           errorMessage = message;
         } else {

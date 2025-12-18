@@ -47,6 +47,13 @@ const instance = axios.create({
 instance.interceptors.request.use(
   (config) => {
     try {
+      // skipAuth 플래그가 있으면 Authorization 헤더를 추가하지 않음 (비밀번호 재설정 등)
+      if (config.skipAuth) {
+        console.log('skipAuth 플래그로 인해 Authorization 헤더를 추가하지 않음');
+        delete config.headers.Authorization;
+        return config;
+      }
+      
       // 여러 토큰 키를 확인 (하위 호환성)
       const token = localStorage.getItem("access_token") || localStorage.getItem("token");
       

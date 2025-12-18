@@ -202,11 +202,14 @@ export const resetPassword = async (token, email, newPassword) => {
       hasNewPassword: !!requestBody.newPassword 
     });
     
+    // 비밀번호 재설정은 인증이 필요 없는 엔드포인트이므로 Authorization 헤더 제거
+    // skipAuth 플래그로 interceptor에서 Authorization 헤더를 추가하지 않도록 함
     const response = await instance.post('/auth/reset-password', requestBody, {
       headers: {
         'Content-Type': 'application/json'
       },
-      withCredentials: false
+      withCredentials: false,
+      skipAuth: true // interceptor에서 Authorization 헤더를 추가하지 않도록 플래그 설정
     });
     console.log('비밀번호 재설정 API 응답:', response.data);
     return response.data;

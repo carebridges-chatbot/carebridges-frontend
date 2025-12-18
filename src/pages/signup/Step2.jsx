@@ -219,7 +219,7 @@ function Step2() {
                 type="text"
                 value={formData.institutionName}
                 onChange={(e) => handleInputChange('institutionName', e.target.value)}
-                placeholder="기관명을 입력해주세요 (선택사항)"
+                placeholder="기관명을 입력해주세요"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>

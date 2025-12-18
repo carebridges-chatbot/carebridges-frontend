@@ -148,7 +148,13 @@ export const findEmail = async (name, phone) => {
 // 비밀번호 찾기 API (이메일로 재설정 링크 전송)
 export const findPassword = async (email) => {
   try {
-    const response = await instance.post('/auth/forgot-password', { email });
+    // 배포 주소를 함께 전달 (백엔드에서 이메일 링크 생성 시 사용)
+    const resetUrl = import.meta.env.VITE_RESET_PASSWORD_URL || 'https://carebridges.vercel.app/reset-password';
+    
+    const response = await instance.post('/auth/forgot-password', { 
+      email: email,
+      reset_url: resetUrl // 백엔드에서 이메일 링크 생성 시 사용할 URL
+    });
     return response.data;
   } catch (error) {
     throw error;

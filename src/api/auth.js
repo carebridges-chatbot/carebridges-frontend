@@ -184,12 +184,17 @@ export const resetPassword = async (token, email, newPassword) => {
       passwordLength: newPassword?.length || 0
     });
     
-    // 백엔드에 토큰, 이메일, 새 비밀번호 전송
+    // 백엔드에 토큰, 이메일(있으면), 새 비밀번호 전송
+    // 이메일이 없어도 토큰만으로 백엔드가 이메일을 조회할 수 있음
     const requestBody = {
       token: token,
-      email: email,
       newPassword: newPassword,
     };
+    
+    // 이메일이 있으면 함께 전송
+    if (email) {
+      requestBody.email = email;
+    }
     
     console.log('요청 본문:', { 
       token: requestBody.token ? requestBody.token.substring(0, 20) + '...' : '없음',

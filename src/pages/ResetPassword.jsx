@@ -63,16 +63,10 @@ function ResetPassword() {
       return;
     }
 
-    // 이메일이 없으면 에러
-    if (!email) {
-      setError('이메일 정보가 없습니다. 이메일에서 받은 링크를 통해 접속해주세요.');
-      setIsLoading(false);
-      return;
-    }
-
     setIsLoading(true);
     try {
-      const response = await resetPassword(token, email, newPassword);
+      // 이메일이 있으면 함께 전송, 없으면 토큰만 전송 (백엔드가 토큰으로 이메일 조회 가능)
+      const response = await resetPassword(token, email || null, newPassword);
       console.log('비밀번호 재설정 성공:', response);
       setShowResult(true);
       alert('비밀번호가 성공적으로 재설정되었습니다. 새로운 비밀번호로 로그인해주세요.');
@@ -169,14 +163,7 @@ function ResetPassword() {
             // 비밀번호 재설정 폼
             <div className="space-y-6">
               {token ? (
-                <div>
-                  <p className="text-gray-600 text-sm mb-4">새로운 비밀번호를 입력해주세요.</p>
-                  {email && (
-                    <p className="text-xs text-gray-500 mb-4">
-                      재설정 대상 이메일: <span className="font-medium">{email}</span>
-                    </p>
-                  )}
-                </div>
+                <p className="text-gray-600 text-sm mb-4">새로운 비밀번호를 입력해주세요.</p>
               ) : (
                 <p className="text-gray-600 text-sm mb-4">이메일에서 받은 링크를 통해 접속해주세요.</p>
               )}

@@ -14,7 +14,7 @@ function FindPw() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // 유효성 검사
+    // 1단계: 프론트엔드 유효성 검사
     if (!email) {
       setError('이메일을 입력해주세요.');
       return;
@@ -31,10 +31,12 @@ function FindPw() {
     setError('');
 
     try {
+      // 2단계: 백엔드에서 이메일 확인 및 비밀번호 재설정 링크 전송
+      // 백엔드에서 이메일이 등록되어 있는지 확인하고, 등록되어 있으면 링크를 전송합니다.
       const response = await findPassword(email);
       console.log('비밀번호 찾기 성공:', response);
       
-      // 성공 시 결과 화면 표시
+      // 3단계: 성공 시 - 이메일이 등록되어 있고 링크가 전송됨
       setShowResult(true);
     } catch (error) {
       console.error('비밀번호 찾기 실패:', error);
@@ -43,7 +45,7 @@ function FindPw() {
       
       let errorMessage = '비밀번호 찾기 중 오류가 발생했습니다. 다시 시도해주세요.';
       
-      // 422 에러 (유효성 검증 실패)
+      // 422 에러 (유효성 검증 실패 - 등록되지 않은 이메일 또는 형식 오류)
       if (error.response?.status === 422) {
         const message = error.response?.data?.message || error.response?.data?.detail || '';
         const errors = error.response?.data?.errors;
@@ -55,12 +57,12 @@ function FindPw() {
         } else if (message) {
           errorMessage = message;
         } else {
-          errorMessage = '입력한 이메일 형식이 올바르지 않거나 등록되지 않은 이메일입니다.';
+          errorMessage = '등록되지 않은 이메일입니다. 회원가입 시 사용한 이메일을 입력해주세요.';
         }
       }
       // 404 에러 (등록되지 않은 이메일)
       else if (error.response?.status === 404) {
-        errorMessage = '등록되지 않은 이메일입니다.';
+        errorMessage = '등록되지 않은 이메일입니다. 회원가입 시 사용한 이메일을 확인해주세요.';
       }
       // 400 에러 (잘못된 요청)
       else if (error.response?.status === 400) {
@@ -101,8 +103,8 @@ function FindPw() {
             <div>
               <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-3 text-center">비밀번호 찾기</h1>
               <p className="text-gray-600 text-sm sm:text-base mb-8 text-center">
-                가입하신 이메일 주소를 입력해주세요.<br />
-                비밀번호 재설정 링크를 보내드립니다.
+                회원가입 시 입력한 이메일 주소를 입력해주세요.<br />
+                등록된 이메일이 확인되면 비밀번호 재설정 링크를 보내드립니다.
               </p>
 
               {error && (
@@ -164,6 +166,7 @@ function FindPw() {
                 </div>
                 <h1 className="text-2xl font-bold text-gray-800 mb-2">이메일을 전송했습니다!</h1>
                 <p className="text-gray-600 text-sm mb-6">
+                  입력하신 이메일이 확인되었습니다.<br />
                   비밀번호 재설정 링크를 이메일로 보내드렸습니다.
                 </p>
               </div>

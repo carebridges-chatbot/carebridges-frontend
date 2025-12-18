@@ -59,10 +59,15 @@ function RightSidebar({ onFaqClick, isOpen, onToggle }) {
       
       {/* 자료실 메뉴 */}
       <div className="flex-1 p-4 space-y-3">
-        <button className="w-full bg-gradient-to-b from-white to-gray-100 border-2 border-blue-400 text-black font-bold px-4 py-2 rounded-xl text-sm shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2 focus:outline-none transform hover:-translate-y-1 active:translate-y-0 hover:bg-gradient-to-b hover:from-blue-50 hover:to-blue-100 focus:border-blue-400">
+        <a 
+          href="https://rainy-forgery-133.notion.site/2025-289bddcf357e80b28c36f28345477c4e?source=copy_link" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="w-full bg-gradient-to-b from-white to-gray-100 border-2 border-blue-400 text-black font-bold px-4 py-2 rounded-xl text-sm shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2 focus:outline-none transform hover:-translate-y-1 active:translate-y-0 hover:bg-gradient-to-b hover:from-blue-50 hover:to-blue-100 focus:border-blue-400"
+        >
           <span>📅</span>
           <span>2025 최신 고시 업데이트</span>
-        </button>
+        </a>
         
         <button className="w-full bg-gradient-to-b from-white to-gray-100 border-2 border-blue-400 text-black font-bold px-4 py-2 rounded-xl text-sm shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2 focus:outline-none transform hover:-translate-y-1 active:translate-y-0 hover:bg-gradient-to-b hover:from-blue-50 hover:to-blue-100 focus:border-blue-400">
           <span>📄</span>
@@ -77,15 +82,25 @@ function RightSidebar({ onFaqClick, isOpen, onToggle }) {
           <span>FAQ 바로가기</span>
         </button>
         
-        <button className="w-full bg-gradient-to-b from-white to-gray-100 border-2 border-blue-400 text-black font-bold px-4 py-2 rounded-xl text-sm shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2 focus:outline-none transform hover:-translate-y-1 active:translate-y-0 hover:bg-gradient-to-b hover:from-blue-50 hover:to-blue-100 focus:border-blue-400">
+        <a 
+          href="https://rainy-forgery-133.notion.site/289bddcf357e80d98ac4d3beea3aab23" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="w-full bg-gradient-to-b from-white to-gray-100 border-2 border-blue-400 text-black font-bold px-4 py-2 rounded-xl text-sm shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2 focus:outline-none transform hover:-translate-y-1 active:translate-y-0 hover:bg-gradient-to-b hover:from-blue-50 hover:to-blue-100 focus:border-blue-400"
+        >
           <span>📖</span>
           <span>사용법 안내</span>
-        </button>
+        </a>
         
-        <button className="w-full bg-gradient-to-b from-white to-gray-100 border-2 border-blue-400 text-black font-bold px-4 py-2 rounded-xl text-sm shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2 focus:outline-none transform hover:-translate-y-1 active:translate-y-0 hover:bg-gradient-to-b hover:from-blue-50 hover:to-blue-100 focus:border-blue-400">
+        <a 
+          href="https://blog.naver.com/carebridges" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="w-full bg-gradient-to-b from-white to-gray-100 border-2 border-blue-400 text-black font-bold px-4 py-2 rounded-xl text-sm shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2 focus:outline-none transform hover:-translate-y-1 active:translate-y-0 hover:bg-gradient-to-b hover:from-blue-50 hover:to-blue-100 focus:border-blue-400"
+        >
           <span>📚</span>
           <span>돌봄다리 전용 자료</span>
-        </button>
+        </a>
       </div>
     </aside>
   );

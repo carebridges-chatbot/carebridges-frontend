@@ -16,7 +16,7 @@ function Signup() {
           <img src="/logo.png" alt="로고" className="w-7 h-7" />
         </div>
         <nav className="hidden md:flex gap-6 text-sm text-gray-700 items-center">
-          <a href="#">돌봄다리 소개</a>
+          <a href="https://rainy-forgery-133.notion.site/289bddcf357e807c85bee7372dd8a0b7" target="_blank" rel="noopener noreferrer">돌봄다리 소개</a>
           <a href="#">고객지원센터</a>
           <a href="#">마이페이지</a>
           <a href="#">회원가입</a>

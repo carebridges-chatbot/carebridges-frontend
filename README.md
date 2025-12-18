@@ -1,6 +1,5 @@
 # 🤖 Care Bridges AI Chatbot
 
-> Frontend for 24/7 AI expert consultation service for long-term care workers
 
 ### 🎙️ [Upgrounder 1st Generation] Care Bridges AI Chatbot Frontend Repository
 

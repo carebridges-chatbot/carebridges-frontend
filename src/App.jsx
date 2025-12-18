@@ -2,8 +2,8 @@
 import { Routes, Route } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
 import ChatPage from './pages/chat/ChatPage';
-import Login from './pages/Login';
-import Signup from './pages/Signup';
+import Login from './pages/login';
+import Signup from './pages/signup';
 import FindId from './pages/FindId';
 import FindPw from './pages/FindPw';
 import ResetPassword from './pages/ResetPassword';

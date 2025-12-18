@@ -148,9 +148,23 @@ export const findEmail = async (name, phone) => {
 // 비밀번호 찾기 API (이메일로 재설정 링크 전송)
 export const findPassword = async (email) => {
   try {
-    const response = await instance.post('/auth/forgot-password', { email });
+    console.log('비밀번호 찾기 API 호출:', { email });
+    const response = await instance.post('/auth/forgot-password', { 
+      email: email 
+    }, {
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      withCredentials: false
+    });
+    console.log('비밀번호 찾기 API 응답:', response.data);
     return response.data;
   } catch (error) {
+    console.error('비밀번호 찾기 API 에러:', {
+      message: error.message,
+      response: error.response?.data,
+      status: error.response?.status
+    });
     throw error;
   }
 };

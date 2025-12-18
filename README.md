@@ -24,9 +24,3 @@
 npm install
 npm run dev
 ```
-
-## API 연동
-- 백엔드 API: https://api.carebridges.o-r.kr
-- 채팅 API: `/chat/messages/with-ai`
-- FAQ API: `/faq/categories`, `/faq/questions`
-- 인증 API: `/auth/login`, `/auth/register`

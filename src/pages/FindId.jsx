@@ -177,10 +177,10 @@ function FindId() {
               {/* 버튼 영역 */}
               <div className="flex gap-3">
                 <button
-                  onClick={handleReset}
+                  onClick={() => navigate('/find-pw')}
                   className="flex-1 px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium"
                 >
-                  다시 찾기
+                  비밀번호 찾기
                 </button>
                 <button
                   onClick={() => navigate('/')}

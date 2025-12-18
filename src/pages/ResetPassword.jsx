@@ -102,6 +102,14 @@ function ResetPassword() {
           fullResponse: responseData
         });
         
+        // 에러 배열의 각 항목을 자세히 로깅
+        if (errors && Array.isArray(errors)) {
+          console.log('에러 배열 상세 분석:');
+          errors.forEach((err, index) => {
+            console.log(`에러 ${index + 1}:`, JSON.stringify(err, null, 2));
+          });
+        }
+        
         if (errors && Array.isArray(errors) && errors.length > 0) {
           // 유효성 검증 에러 배열이 있는 경우 - 모든 에러 메시지 수집
           const errorMessages = errors.map(err => {

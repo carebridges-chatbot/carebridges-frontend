@@ -224,6 +224,10 @@ export const resetPassword = async (token, email, newPassword) => {
     // 에러 응답의 errors 배열 상세 로깅
     if (error.response?.data?.errors) {
       console.error('에러 상세 배열:', error.response.data.errors);
+      console.error('에러 배열 개수:', error.response.data.errors.length);
+      error.response.data.errors.forEach((err, index) => {
+        console.error(`에러 ${index + 1}:`, JSON.stringify(err, null, 2));
+      });
     }
     
     throw error;

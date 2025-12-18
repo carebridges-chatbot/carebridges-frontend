@@ -12,11 +12,13 @@ function ResetPassword() {
   const [error, setError] = useState('');
   const [showResult, setShowResult] = useState(false);
   const [token, setToken] = useState('');
+  const [email, setEmail] = useState('');
 
   useEffect(() => {
-    // URL에서 토큰 추출
+    // URL에서 토큰과 이메일 추출
     const tokenFromUrl = searchParams.get('token');
-    console.log('URL에서 토큰 추출 시도:', tokenFromUrl);
+    const emailFromUrl = searchParams.get('email');
+    console.log('URL에서 파라미터 추출 시도:', { token: tokenFromUrl, email: emailFromUrl });
     console.log('전체 URL 파라미터:', Object.fromEntries(searchParams.entries()));
     
     if (tokenFromUrl && tokenFromUrl.length > 0) {
@@ -27,6 +29,12 @@ function ResetPassword() {
       const errorMsg = '유효하지 않은 링크입니다. 토큰이 없거나 잘못된 형식입니다. 이메일에서 받은 링크를 다시 확인해주세요.';
       setError(errorMsg);
       console.error('토큰 추출 실패:', { tokenFromUrl, searchParams: Object.fromEntries(searchParams.entries()) });
+    }
+    
+    // 이메일이 URL에 있으면 설정
+    if (emailFromUrl && emailFromUrl.length > 0) {
+      setEmail(emailFromUrl);
+      console.log('이메일 추출 완료:', emailFromUrl);
     }
   }, [searchParams]);
 
@@ -55,9 +63,16 @@ function ResetPassword() {
       return;
     }
 
+    // 이메일이 없으면 에러
+    if (!email) {
+      setError('이메일 정보가 없습니다. 이메일에서 받은 링크를 통해 접속해주세요.');
+      setIsLoading(false);
+      return;
+    }
+
     setIsLoading(true);
     try {
-      const response = await resetPassword(token, newPassword);
+      const response = await resetPassword(token, email, newPassword);
       console.log('비밀번호 재설정 성공:', response);
       setShowResult(true);
       alert('비밀번호가 성공적으로 재설정되었습니다. 새로운 비밀번호로 로그인해주세요.');
@@ -154,7 +169,14 @@ function ResetPassword() {
             // 비밀번호 재설정 폼
             <div className="space-y-6">
               {token ? (
-                <p className="text-gray-600 text-sm mb-4">새로운 비밀번호를 입력해주세요.</p>
+                <div>
+                  <p className="text-gray-600 text-sm mb-4">새로운 비밀번호를 입력해주세요.</p>
+                  {email && (
+                    <p className="text-xs text-gray-500 mb-4">
+                      재설정 대상 이메일: <span className="font-medium">{email}</span>
+                    </p>
+                  )}
+                </div>
               ) : (
                 <p className="text-gray-600 text-sm mb-4">이메일에서 받은 링크를 통해 접속해주세요.</p>
               )}

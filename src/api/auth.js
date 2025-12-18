@@ -174,24 +174,26 @@ export const findPassword = async (name, email) => {
   }
 };
 
-// 비밀번호 재설정 API
-export const resetPassword = async (token, newPassword) => {
+// 비밀번호 재설정 API (토큰, 이메일, 새 비밀번호 전송)
+export const resetPassword = async (token, email, newPassword) => {
   try {
     console.log('비밀번호 재설정 API 호출:', { 
-      token: token ? token.substring(0, 20) + '...' : '없음', 
+      token: token ? token.substring(0, 20) + '...' : '없음',
+      email: email || '없음',
       hasPassword: !!newPassword,
       passwordLength: newPassword?.length || 0
     });
     
-    // 백엔드가 기대하는 형식으로 요청
-    // 다양한 필드명 시도: token/resetToken, newPassword/password
+    // 백엔드에 토큰, 이메일, 새 비밀번호 전송
     const requestBody = {
       token: token,
+      email: email,
       newPassword: newPassword,
     };
     
     console.log('요청 본문:', { 
       token: requestBody.token ? requestBody.token.substring(0, 20) + '...' : '없음',
+      email: requestBody.email || '없음',
       hasNewPassword: !!requestBody.newPassword 
     });
     

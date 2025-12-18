@@ -38,14 +38,47 @@ function FindPw() {
       setShowResult(true);
     } catch (error) {
       console.error('비밀번호 찾기 실패:', error);
+      console.error('에러 응답:', error.response?.data);
+      console.error('에러 상태:', error.response?.status);
       
-      if (error.response?.status === 404) {
-        setError('등록되지 않은 이메일입니다.');
-      } else if (error.response?.data?.message) {
-        setError(error.response.data.message);
-      } else {
-        setError('비밀번호 찾기 중 오류가 발생했습니다. 다시 시도해주세요.');
+      let errorMessage = '비밀번호 찾기 중 오류가 발생했습니다. 다시 시도해주세요.';
+      
+      // 422 에러 (유효성 검증 실패)
+      if (error.response?.status === 422) {
+        const message = error.response?.data?.message || error.response?.data?.detail || '';
+        const errors = error.response?.data?.errors;
+        
+        if (errors && Array.isArray(errors) && errors.length > 0) {
+          // 유효성 검증 에러 배열이 있는 경우
+          const firstError = errors[0];
+          errorMessage = firstError.message || firstError || '입력한 정보를 확인해주세요.';
+        } else if (message) {
+          errorMessage = message;
+        } else {
+          errorMessage = '입력한 이메일 형식이 올바르지 않거나 등록되지 않은 이메일입니다.';
+        }
       }
+      // 404 에러 (등록되지 않은 이메일)
+      else if (error.response?.status === 404) {
+        errorMessage = '등록되지 않은 이메일입니다.';
+      }
+      // 400 에러 (잘못된 요청)
+      else if (error.response?.status === 400) {
+        const message = error.response?.data?.message || error.response?.data?.detail || '';
+        errorMessage = message || '입력한 정보를 확인해주세요.';
+      }
+      // 네트워크 오류
+      else if (!error.response) {
+        errorMessage = '서버에 연결할 수 없습니다. 인터넷 연결을 확인해주세요.';
+      }
+      // 기타 에러
+      else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.response?.data?.detail) {
+        errorMessage = error.response.data.detail;
+      }
+      
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }

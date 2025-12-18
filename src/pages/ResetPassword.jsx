@@ -16,11 +16,17 @@ function ResetPassword() {
   useEffect(() => {
     // URL에서 토큰 추출
     const tokenFromUrl = searchParams.get('token');
+    console.log('URL에서 토큰 추출 시도:', tokenFromUrl);
+    console.log('전체 URL 파라미터:', Object.fromEntries(searchParams.entries()));
+    
     if (tokenFromUrl && tokenFromUrl.length > 0) {
       setToken(tokenFromUrl);
-      console.log('토큰 추출 완료:', tokenFromUrl);
+      setError(''); // 토큰이 있으면 에러 초기화
+      console.log('토큰 추출 완료:', tokenFromUrl.substring(0, 20) + '...');
     } else {
-      setError('유효하지 않은 링크입니다. 토큰이 없거나 잘못된 형식입니다.');
+      const errorMsg = '유효하지 않은 링크입니다. 토큰이 없거나 잘못된 형식입니다. 이메일에서 받은 링크를 다시 확인해주세요.';
+      setError(errorMsg);
+      console.error('토큰 추출 실패:', { tokenFromUrl, searchParams: Object.fromEntries(searchParams.entries()) });
     }
   }, [searchParams]);
 
@@ -115,7 +121,11 @@ function ResetPassword() {
           {!showResult ? (
             // 비밀번호 재설정 폼
             <div className="space-y-6">
-              <p className="text-gray-600 text-sm mb-4">새로운 비밀번호를 입력해주세요.</p>
+              {token ? (
+                <p className="text-gray-600 text-sm mb-4">새로운 비밀번호를 입력해주세요.</p>
+              ) : (
+                <p className="text-gray-600 text-sm mb-4">이메일에서 받은 링크를 통해 접속해주세요.</p>
+              )}
               <form onSubmit={handleResetPassword} className="space-y-6">
                 <div>
                   <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700 text-left mb-2">

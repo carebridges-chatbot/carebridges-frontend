@@ -199,11 +199,6 @@ function LeftSidebar({
             )}
           </div>
         )}
-        
-        <button className="w-full bg-gradient-to-b from-white to-gray-100 border-2 border-blue-400 text-black font-bold px-4 py-2 rounded-xl text-sm shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2 focus:outline-none transform hover:-translate-y-1 active:translate-y-0 hover:bg-gradient-to-b hover:from-blue-50 hover:to-blue-100 focus:border-blue-400">
-          <span>🔖</span>
-          <span>북마크한 답변</span>
-        </button>
       </div>
       
       {/* 설정 */}

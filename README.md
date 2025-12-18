@@ -1,5 +1,5 @@
 # 🤖 Care Bridges AI Chatbot
-
+> AI specialized in legal/labor/notification information for long-term care facility workers
 
 ### 🎙️ [Upgrounder 1st Generation] Care Bridges AI Chatbot Frontend Repository
 

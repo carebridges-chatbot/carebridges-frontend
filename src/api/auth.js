@@ -145,13 +145,14 @@ export const findEmail = async (name, phone) => {
   }
 };
 
-// 비밀번호 찾기 API (이메일로 재설정 링크 전송)
-export const findPassword = async (email) => {
+// 비밀번호 찾기 API (이름과 이메일로 재설정 링크 전송)
+export const findPassword = async (name, email) => {
   try {
-    console.log('비밀번호 찾기 API 호출:', { email });
+    console.log('비밀번호 찾기 API 호출:', { name, email });
     
-    // 백엔드가 기대하는 형식으로 요청 (reset_url은 백엔드에서 처리하도록)
+    // 백엔드에 이름과 이메일을 함께 전송
     const response = await instance.post('/auth/forgot-password', { 
+      name: name,
       email: email
     });
     console.log('비밀번호 찾기 API 응답:', response.data);

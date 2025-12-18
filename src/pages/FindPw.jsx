@@ -6,6 +6,7 @@ import LoginHeader from '../components/LoginHeader';
 
 function FindPw() {
   const navigate = useNavigate();
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -15,6 +16,11 @@ function FindPw() {
     e.preventDefault();
     
     // 1단계: 프론트엔드 유효성 검사
+    if (!name) {
+      setError('이름을 입력해주세요.');
+      return;
+    }
+
     if (!email) {
       setError('이메일을 입력해주세요.');
       return;
@@ -31,12 +37,12 @@ function FindPw() {
     setError('');
 
     try {
-      // 2단계: 백엔드에서 이메일 확인 및 비밀번호 재설정 링크 전송
-      // 백엔드에서 이메일이 등록되어 있는지 확인하고, 등록되어 있으면 링크를 전송합니다.
-      const response = await findPassword(email);
+      // 2단계: 백엔드에서 이름과 이메일 확인 및 비밀번호 재설정 링크 전송
+      // 백엔드에서 이름과 이메일이 모두 일치하는지 확인하고, 일치하면 링크를 전송합니다.
+      const response = await findPassword(name, email);
       console.log('비밀번호 찾기 성공:', response);
       
-      // 3단계: 성공 시 - 이메일이 등록되어 있고 링크가 전송됨
+      // 3단계: 성공 시 - 이름과 이메일이 일치하고 링크가 전송됨
       setShowResult(true);
     } catch (error) {
       console.error('비밀번호 찾기 실패:', error);
@@ -81,12 +87,12 @@ function FindPw() {
         } else if (message) {
           errorMessage = message;
         } else {
-          errorMessage = '등록되지 않은 이메일입니다. 회원가입 시 사용한 이메일을 입력해주세요.';
+          errorMessage = '입력한 이름과 이메일이 일치하지 않습니다. 회원가입 시 사용한 정보를 확인해주세요.';
         }
       }
-      // 404 에러 (등록되지 않은 이메일)
+      // 404 에러 (등록되지 않은 이메일 또는 이름 불일치)
       else if (error.response?.status === 404) {
-        errorMessage = '등록되지 않은 이메일입니다. 회원가입 시 사용한 이메일을 확인해주세요.';
+        errorMessage = '입력한 이름과 이메일이 일치하지 않습니다. 회원가입 시 사용한 정보를 확인해주세요.';
       }
       // 400 에러 (잘못된 요청)
       else if (error.response?.status === 400) {
@@ -111,6 +117,7 @@ function FindPw() {
   };
 
   const handleReset = () => {
+    setName('');
     setEmail('');
     setShowResult(false);
     setError('');
@@ -127,8 +134,8 @@ function FindPw() {
             <div>
               <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-3 text-center">비밀번호 찾기</h1>
               <p className="text-gray-600 text-sm sm:text-base mb-8 text-center">
-                회원가입 시 입력한 이메일 주소를 입력해주세요.<br />
-                등록된 이메일이 확인되면 비밀번호 재설정 링크를 보내드립니다.
+                회원가입 시 입력한 이름과 이메일 주소를 입력해주세요.<br />
+                입력한 정보가 확인되면 비밀번호 재설정 링크를 보내드립니다.
               </p>
 
               {error && (
@@ -138,6 +145,27 @@ function FindPw() {
               )}
 
               <form onSubmit={handleSubmit} className="space-y-6">
+                {/* 이름 입력 */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    이름<span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => {
+                      setName(e.target.value);
+                      setError(''); // 입력 시 에러 메시지 초기화
+                    }}
+                    placeholder="이름을 입력해주세요"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    disabled={isLoading}
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    회원가입 시 사용한 이름을 입력해주세요
+                  </p>
+                </div>
+
                 {/* 이메일 입력 */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -190,7 +218,7 @@ function FindPw() {
                 </div>
                 <h1 className="text-2xl font-bold text-gray-800 mb-2">이메일을 전송했습니다!</h1>
                 <p className="text-gray-600 text-sm mb-6">
-                  입력하신 이메일이 확인되었습니다.<br />
+                  입력하신 이름과 이메일이 확인되었습니다.<br />
                   비밀번호 재설정 링크를 이메일로 보내드렸습니다.
                 </p>
               </div>

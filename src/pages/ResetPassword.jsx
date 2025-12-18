@@ -66,7 +66,8 @@ function ResetPassword() {
     setIsLoading(true);
     try {
       // 이메일이 있으면 함께 전송, 없으면 토큰만 전송 (백엔드가 토큰으로 이메일 조회 가능)
-      const response = await resetPassword(token, email || null, newPassword);
+      // 백엔드가 new_password1, new_password2를 기대하므로 confirmPassword도 함께 전송
+      const response = await resetPassword(token, email || null, newPassword, confirmPassword);
       console.log('비밀번호 재설정 성공:', response);
       setShowResult(true);
       alert('비밀번호가 성공적으로 재설정되었습니다. 새로운 비밀번호로 로그인해주세요.');

@@ -175,20 +175,21 @@ export const findPassword = async (name, email) => {
 };
 
 // 비밀번호 재설정 API (토큰, 이메일, 새 비밀번호 전송)
-export const resetPassword = async (token, email, newPassword) => {
+export const resetPassword = async (token, email, newPassword, confirmPassword) => {
   try {
     console.log('비밀번호 재설정 API 호출:', { 
       token: token ? token.substring(0, 20) + '...' : '없음',
       email: email || '없음',
       hasPassword: !!newPassword,
-      passwordLength: newPassword?.length || 0
+      passwordLength: newPassword?.length || 0,
+      hasConfirmPassword: !!confirmPassword
     });
     
-    // 백엔드에 토큰, 이메일(있으면), 새 비밀번호 전송
-    // 이메일이 없어도 토큰만으로 백엔드가 이메일을 조회할 수 있음
+    // 백엔드가 기대하는 필드명: new_password1, new_password2
     const requestBody = {
       token: token,
-      newPassword: newPassword,
+      new_password1: newPassword,
+      new_password2: confirmPassword,
     };
     
     // 이메일이 있으면 함께 전송
@@ -199,7 +200,8 @@ export const resetPassword = async (token, email, newPassword) => {
     console.log('요청 본문:', { 
       token: requestBody.token ? requestBody.token.substring(0, 20) + '...' : '없음',
       email: requestBody.email || '없음',
-      hasNewPassword: !!requestBody.newPassword 
+      hasNewPassword1: !!requestBody.new_password1,
+      hasNewPassword2: !!requestBody.new_password2
     });
     
     // 비밀번호 재설정은 인증이 필요 없는 엔드포인트이므로 Authorization 헤더 제거

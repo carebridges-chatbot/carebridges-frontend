@@ -1,5 +1,5 @@
 // src/components/LoginHeader.jsx
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 function LoginHeader() {
   const navigate = useNavigate();
@@ -18,10 +18,6 @@ function LoginHeader() {
       
       <nav className="flex gap-4 sm:gap-6 text-sm text-gray-700 items-center">
         <a href="https://rainy-forgery-133.notion.site/289bddcf357e807c85bee7372dd8a0b7" target="_blank" rel="noopener noreferrer" className="hover:text-blue-600 transition-colors">돌봄다리 소개</a>
-        <Link to="/signup/step1" className="hover:text-blue-600 transition-colors">회원가입</Link>
-        <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium">
-          로그인
-        </button>
       </nav>
     </header>
   );

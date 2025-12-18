@@ -47,13 +47,37 @@ function FindPw() {
       
       // 422 에러 (유효성 검증 실패 - 등록되지 않은 이메일 또는 형식 오류)
       if (error.response?.status === 422) {
-        const message = error.response?.data?.message || error.response?.data?.detail || '';
-        const errors = error.response?.data?.errors;
+        const responseData = error.response?.data || {};
+        const message = responseData.message || responseData.detail || '';
+        const errors = responseData.errors;
+        
+        console.log('422 에러 상세:', {
+          message,
+          errors,
+          fullResponse: responseData
+        });
         
         if (errors && Array.isArray(errors) && errors.length > 0) {
           // 유효성 검증 에러 배열이 있는 경우
           const firstError = errors[0];
-          errorMessage = firstError.message || firstError || '입력한 정보를 확인해주세요.';
+          
+          // 다양한 에러 형식 처리
+          if (typeof firstError === 'string') {
+            // errors: ['Field required']
+            errorMessage = firstError;
+          } else if (firstError.message) {
+            // errors: [{ message: 'Field required' }]
+            errorMessage = firstError.message;
+          } else if (firstError.msg) {
+            // errors: [{ msg: 'Field required' }]
+            errorMessage = firstError.msg;
+          } else if (firstError.error) {
+            // errors: [{ error: 'Field required' }]
+            errorMessage = firstError.error;
+          } else {
+            // 기타 형식
+            errorMessage = String(firstError) || '입력한 정보를 확인해주세요.';
+          }
         } else if (message) {
           errorMessage = message;
         } else {

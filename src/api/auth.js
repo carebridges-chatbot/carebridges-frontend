@@ -160,8 +160,15 @@ export const findPassword = async (email) => {
     console.error('비밀번호 찾기 API 에러:', {
       message: error.message,
       response: error.response?.data,
-      status: error.response?.status
+      status: error.response?.status,
+      errors: error.response?.data?.errors
     });
+    
+    // 에러 응답의 errors 배열 상세 로깅
+    if (error.response?.data?.errors) {
+      console.error('에러 상세 배열:', error.response.data.errors);
+    }
+    
     throw error;
   }
 };

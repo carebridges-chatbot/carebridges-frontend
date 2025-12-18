@@ -3,24 +3,58 @@ import instance from './axios';
 // 로그인 API
 export const loginUser = async (email, password) => {
   try {
-    // form-urlencoded 형식으로 전송
+    console.log('로그인 API 호출 시작:', { email });
+    
+    // JSON 형식으로 전송 (백엔드가 JSON을 기대하는 경우)
+    const loginData = {
+      email: email,
+      password: password
+    };
+    
+    // form-urlencoded 형식도 시도 (OAuth2 스타일)
     const formData = new URLSearchParams();
     formData.append('username', email);
     formData.append('password', password);
     
-    const response = await instance.post('/auth/login', formData, {
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      withCredentials: false // CORS 오류 해결
-    });
-    
-    // 토큰 저장
-    if (response.data.access_token) {
-      localStorage.setItem('access_token', response.data.access_token);
+    let response;
+    try {
+      // 먼저 JSON 형식으로 시도
+      response = await instance.post('/auth/login', loginData, {
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        withCredentials: false
+      });
+      console.log('JSON 형식 로그인 성공:', response.data);
+    } catch (jsonError) {
+      console.log('JSON 형식 실패, form-urlencoded 시도:', jsonError.response?.data);
+      // JSON 실패 시 form-urlencoded 시도
+      response = await instance.post('/auth/login', formData, {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        withCredentials: false
+      });
+      console.log('form-urlencoded 형식 로그인 성공:', response.data);
     }
-    if (response.data.refresh_token) {
-      localStorage.setItem('refresh_token', response.data.refresh_token);
+    
+    console.log('로그인 응답 전체:', response);
+    console.log('응답 데이터:', response.data);
+    
+    // 토큰 저장 (다양한 형식 지원)
+    const token = response.data.access_token || response.data.token || response.data.accessToken;
+    const refreshToken = response.data.refresh_token || response.data.refreshToken;
+    
+    if (token) {
+      localStorage.setItem('access_token', token);
+      localStorage.setItem('token', token);
+      console.log('토큰 저장 완료');
+    } else {
+      console.warn('토큰이 응답에 없습니다:', response.data);
+    }
+    
+    if (refreshToken) {
+      localStorage.setItem('refresh_token', refreshToken);
     }
     
     // 사용자 정보 저장 (응답에 사용자 정보가 포함된 경우)
@@ -30,6 +64,12 @@ export const loginUser = async (email, password) => {
     
     return response.data;
   } catch (error) {
+    console.error('로그인 API 에러 상세:', {
+      message: error.message,
+      response: error.response?.data,
+      status: error.response?.status,
+      statusText: error.response?.statusText
+    });
     throw error;
   }
 };

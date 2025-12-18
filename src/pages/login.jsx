@@ -29,63 +29,104 @@ function Login() {
       console.log('응답에 사용자 정보가 있는지 확인:', response.user);
       
       // 로그인 성공 시 localStorage에 토큰과 사용자 정보 저장
-      if (response.token || response.access_token) {
-        const token = response.token || response.access_token;
+      // auth.js에서 이미 토큰을 저장했지만, 여기서도 확인
+      const token = response.token || response.access_token || response.accessToken;
+      
+      if (token) {
         // access_token과 token 모두 저장 (하위 호환성)
         localStorage.setItem('access_token', token);
         localStorage.setItem('token', token);
-        
-        // 리프레시 토큰이 있다면 저장
-        if (response.refresh_token) {
-          localStorage.setItem('refresh_token', response.refresh_token);
-        }
-        
-        // 사용자 정보 가져오기
-        try {
-          const { getUserInfo } = await import('../api/auth');
-          const userInfo = await getUserInfo();
-          console.log('API에서 가져온 사용자 정보:', userInfo);
-          localStorage.setItem('user', JSON.stringify(userInfo));
-        } catch (userInfoError) {
-          console.error('사용자 정보 가져오기 실패, 기본 정보 사용:', userInfoError);
-          
-          // API 실패 시 응답의 사용자 정보 또는 기본 정보 사용
-          const userInfo = response.user || {
-            email: email,
-            name: '',
-            phone: '',
-            worker_id: null,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          };
-          
-          console.log('기본 사용자 정보 저장:', userInfo);
-          localStorage.setItem('user', JSON.stringify(userInfo));
-        }
-        
-        console.log('토큰 저장 완료:', {
-          access_token: !!token,
-          refresh_token: !!response.refresh_token
-        });
-        
-        // 로그인 상태 변경 이벤트 발생
-        window.dispatchEvent(new CustomEvent('loginStatusChanged'));
+        console.log('토큰 저장 완료 (Login.jsx)');
+      } else {
+        console.warn('응답에 토큰이 없습니다:', response);
       }
+      
+      // 리프레시 토큰이 있다면 저장
+      const refreshToken = response.refresh_token || response.refreshToken;
+      if (refreshToken) {
+        localStorage.setItem('refresh_token', refreshToken);
+      }
+      
+      // 사용자 정보 가져오기
+      try {
+        const { getUserInfo } = await import('../api/auth');
+        const userInfo = await getUserInfo();
+        console.log('API에서 가져온 사용자 정보:', userInfo);
+        localStorage.setItem('user', JSON.stringify(userInfo));
+      } catch (userInfoError) {
+        console.error('사용자 정보 가져오기 실패, 기본 정보 사용:', userInfoError);
+        
+        // API 실패 시 응답의 사용자 정보 또는 기본 정보 사용
+        const userInfo = response.user || {
+          email: email,
+          name: '',
+          phone: '',
+          worker_id: null,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        };
+        
+        console.log('기본 사용자 정보 저장:', userInfo);
+        localStorage.setItem('user', JSON.stringify(userInfo));
+      }
+      
+      console.log('토큰 저장 완료:', {
+        access_token: !!localStorage.getItem('access_token'),
+        refresh_token: !!localStorage.getItem('refresh_token')
+      });
+      
+      // 로그인 상태 변경 이벤트 발생
+      window.dispatchEvent(new CustomEvent('loginStatusChanged'));
       
       navigate('/dashboard'); // 로그인 성공 후 이동할 페이지
     } catch (error) {
       console.error('로그인 실패:', error);
+      console.error('에러 응답:', error.response?.data);
+      console.error('에러 상태:', error.response?.status);
       
-      // 회원가입되지 않은 사용자인지 확인 (400 에러와 관련 메시지)
-      if (error.response?.status === 400 && 
-          (error.response?.data?.message?.includes('비밀번호가 올바르지 않습니다') ||
-           error.response?.data?.message?.includes('이메일이 올바르지 않습니다'))) {
-        setShowSignupPopup(true);
-      } else if (error.response?.data?.message) {
-        setError(error.response.data.message);
-      } else {
-        setError('로그인에 실패했습니다. 다시 시도해주세요.');
+      let errorMessage = '로그인에 실패했습니다. 다시 시도해주세요.';
+      
+      // 네트워크 오류
+      if (!error.response) {
+        errorMessage = '서버에 연결할 수 없습니다. 인터넷 연결을 확인해주세요.';
       }
+      // 400 에러 (잘못된 요청)
+      else if (error.response?.status === 400) {
+        const message = error.response?.data?.message || error.response?.data?.detail || '';
+        if (message.includes('비밀번호') || message.includes('password') || 
+            message.includes('이메일') || message.includes('email') ||
+            message.includes('잘못') || message.includes('incorrect')) {
+          errorMessage = message || '이메일 또는 비밀번호가 올바르지 않습니다.';
+          setShowSignupPopup(true);
+        } else {
+          errorMessage = message || '입력한 정보를 확인해주세요.';
+        }
+      }
+      // 401 에러 (인증 실패)
+      else if (error.response?.status === 401) {
+        errorMessage = error.response?.data?.message || error.response?.data?.detail || '이메일 또는 비밀번호가 올바르지 않습니다.';
+        setShowSignupPopup(true);
+      }
+      // 404 에러 (엔드포인트 없음)
+      else if (error.response?.status === 404) {
+        errorMessage = '로그인 서비스를 찾을 수 없습니다. 관리자에게 문의해주세요.';
+      }
+      // 422 에러 (유효성 검사 실패)
+      else if (error.response?.status === 422) {
+        errorMessage = error.response?.data?.message || error.response?.data?.detail || '입력한 정보가 올바르지 않습니다.';
+      }
+      // 500 에러 (서버 오류)
+      else if (error.response?.status >= 500) {
+        errorMessage = '서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
+      }
+      // 기타 에러
+      else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.response?.data?.detail) {
+        errorMessage = error.response.data.detail;
+      }
+      
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }

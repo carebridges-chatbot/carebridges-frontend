@@ -103,13 +103,37 @@ function Step2() {
         console.error('응답 데이터:', error.response.data);
         console.error('응답 헤더:', error.response.headers);
         
+        const errorMessage = error.response.data?.message || error.response.data?.detail || '';
+        const errorData = error.response.data;
+        
+        // 이미 등록된 이메일인지 확인
+        const isEmailAlreadyRegistered = 
+          error.response.status === 400 || 
+          error.response.status === 409 ||
+          errorMessage.toLowerCase().includes('이메일') && 
+          (errorMessage.includes('이미') || errorMessage.includes('등록') || errorMessage.includes('존재') || errorMessage.includes('중복')) ||
+          errorMessage.toLowerCase().includes('email') && 
+          (errorMessage.toLowerCase().includes('already') || errorMessage.toLowerCase().includes('exists') || errorMessage.toLowerCase().includes('duplicate')) ||
+          (errorData?.errors && Array.isArray(errorData.errors) && 
+           errorData.errors.some(err => 
+             (err.field === 'email' || err.field === 'Email') && 
+             (err.message?.includes('이미') || err.message?.includes('등록') || err.message?.includes('존재') || err.message?.includes('중복') ||
+              err.message?.toLowerCase().includes('already') || err.message?.toLowerCase().includes('exists') || err.message?.toLowerCase().includes('duplicate'))
+           ));
+        
+        if (isEmailAlreadyRegistered) {
+          alert('이미 등록된 이메일입니다.');
+          setError('이미 등록된 이메일입니다.');
+          return;
+        }
+        
         // 422 유효성 검증 실패 시 상세 에러 표시
         if (error.response.status === 422) {
           console.error('=== 유효성 검증 실패 상세 정보 ===');
-          console.error('에러 메시지:', error.response.data.message);
-          if (error.response.data.errors && error.response.data.errors.length > 0) {
+          console.error('에러 메시지:', errorMessage);
+          if (errorData.errors && Array.isArray(errorData.errors) && errorData.errors.length > 0) {
             console.error('구체적인 에러들:');
-            error.response.data.errors.forEach((err, index) => {
+            errorData.errors.forEach((err, index) => {
               console.error(`${index + 1}. 필드: ${err.field || 'N/A'}`);
               console.error(`   메시지: ${err.message || err}`);
               console.error(`   값: ${err.value || 'N/A'}`);
@@ -118,12 +142,12 @@ function Step2() {
           console.error('================================');
           
           // 사용자에게 에러 메시지 표시
-          setError(`회원가입 실패: ${error.response.data.message}`);
+          setError(`회원가입 실패: ${errorMessage}`);
           return; // 에러 시 진행 중단
         }
         
         // 다른 HTTP 에러들
-        setError(`회원가입 실패: ${error.response.data.message || '서버 오류가 발생했습니다.'}`);
+        setError(`회원가입 실패: ${errorMessage || '서버 오류가 발생했습니다.'}`);
         return;
       } else if (error.request) {
         console.error('요청은 보냈지만 응답을 받지 못함');
